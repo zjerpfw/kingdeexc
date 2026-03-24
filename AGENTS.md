@@ -9,6 +9,9 @@ corepack enable
 corepack prepare pnpm@9.12.3 --activate
 pnpm install --frozen-lockfile
 
+Environment:
+If .env is missing and .env.example exists, copy .env.example to .env.
+
 Build:
 pnpm build
 
