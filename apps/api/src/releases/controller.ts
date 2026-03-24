@@ -16,9 +16,11 @@ export class ReleaseController {
       this.prisma.productMaster.findMany(),
     ]);
     const version = `v${Date.now()}`;
-    const payload = { version, releasedAt: new Date().toISOString(), fieldDictionary, formulaProfiles, replacementRules, productSnapshot };
-    const checksum = createHash('sha256').update(JSON.stringify(payload)).digest('hex');
-    const created = await this.prisma.ruleRelease.create({ data: { version, payloadJson: payload as any, checksum, createdBy: 'admin' } });
+    const releasedAt = new Date().toISOString();
+    const payloadBase = { version, releasedAt, fieldDictionary, formulaProfiles, replacementRules, productSnapshot };
+    const checksum = createHash('sha256').update(JSON.stringify(payloadBase)).digest('hex');
+    const payload = { ...payloadBase, checksum };
+    const created = await this.prisma.ruleRelease.create({ data: { version, releasedAt: new Date(releasedAt), payloadJson: payload as any, checksum, createdBy: 'admin' } });
     await this.audit.log('admin', 'publish', 'RuleRelease', created.id, null, created);
     return created;
   }
@@ -37,7 +39,8 @@ export class ReleaseController {
   async rollback(@Param('version') version: string) {
     const release = await this.prisma.ruleRelease.findUnique({ where: { version } });
     if (!release) return { ok: false };
-    const created = await this.prisma.ruleRelease.create({ data: { version: `rollback-${Date.now()}`, payloadJson: release.payloadJson, checksum: release.checksum, status: 'rollback', createdBy: 'admin' } });
+    const newVersion = `rollback-${Date.now()}`;
+    const created = await this.prisma.ruleRelease.create({ data: { version: newVersion, payloadJson: release.payloadJson, checksum: release.checksum, status: 'rollback', createdBy: 'admin' } });
     await this.audit.log('admin', 'rollback', 'RuleRelease', created.id, null, created);
     return created;
   }

@@ -1,4 +1,4 @@
-import type { NormalizedInventoryRow, PluginSettings, RulePackage } from '@kingdee/shared';
+import type { GapDecision, NormalizedInventoryRow, PluginSettings, RulePackage } from '@kingdee/shared';
 
 const KEY = 'kingdee-plugin-cache';
 
@@ -8,11 +8,20 @@ export interface PluginCache {
   rulePackage?: RulePackage;
   inventoryPool: Record<string, NormalizedInventoryRow>;
   settings: PluginSettings;
+  debug?: {
+    orderApiHits: number;
+    inventoryApiHits: number;
+    lastDecisionCount: number;
+    lastParsedOrderRows?: unknown;
+    lastParsedInventoryRows?: unknown;
+    lastDecisions?: GapDecision[];
+  };
 }
 
 const defaultCache: PluginCache = {
   inventoryPool: {},
   settings: { autoPopup: true, onlyFullyCover: false, showWhenConversionFailed: true },
+  debug: { orderApiHits: 0, inventoryApiHits: 0, lastDecisionCount: 0 },
 };
 
 export async function getCache(): Promise<PluginCache> {

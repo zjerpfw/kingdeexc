@@ -73,6 +73,13 @@ export interface RulePackage {
   checksum: string;
 }
 
+export interface RuleReleaseEnvelope {
+  version: string;
+  releasedAt: string;
+  checksum: string;
+  payloadJson: RulePackage;
+}
+
 export interface PluginSettings {
   autoPopup: boolean;
   onlyFullyCover: boolean;

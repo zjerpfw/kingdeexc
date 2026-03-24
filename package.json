@@ -6,6 +6,9 @@
     "build": "pnpm -r build",
     "dev": "pnpm -r --parallel dev",
     "test": "pnpm -r test",
-    "lint": "pnpm -r lint"
+    "lint": "pnpm -r lint",
+    "check:env": "node scripts/check-env.js",
+    "dev:init": "node scripts/dev-init.js",
+    "dev:reset": "node scripts/dev-reset.js"
   }
 }

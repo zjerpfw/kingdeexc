@@ -6,34 +6,61 @@
 - `apps/browser-extension`: Chrome/Edge MV3 插件（content script + 决策引擎）
 - `packages/shared`: 共享类型、字段字典、公式与换算能力
 
-## 快速启动
-1. 安装依赖
+## 从零启动（推荐）
+### 版本要求
+- Node.js: `>=20`（建议 20 LTS）
+- pnpm: `9.x`
+- Docker + Docker Compose
+
+### 1) 环境检查
 ```bash
-pnpm install
+pnpm run check:env
 ```
-2. 启动 PostgreSQL
+
+### 2) 一键初始化
 ```bash
-docker compose up -d
+pnpm run dev:init
 ```
-3. 环境变量
-```bash
-cp .env.example .env
-```
-4. 初始化数据库并导入种子
-```bash
-pnpm --filter @kingdee/api prisma:generate
-pnpm --filter @kingdee/api prisma:migrate --name init
-pnpm --filter @kingdee/api seed
-```
-5. 启动 API + 后台
+该命令会执行：
+- `docker compose up -d`
+- `pnpm install`
+- Prisma generate / migrate
+- seed 导入
+
+### 3) 启动开发
 ```bash
 pnpm dev
 ```
-6. 构建浏览器插件
+
+### 4) 构建插件
 ```bash
 pnpm --filter @kingdee/browser-extension build
 ```
-> 构建产物在 `apps/browser-extension/dist`，在 Chrome/Edge 开发者模式中加载该目录。
+构建产物：`apps/browser-extension/dist`。
+
+### 5) 一键重置（清库重建）
+```bash
+pnpm run dev:reset
+```
+
+## Windows 说明
+- 可直接使用 Node 运行脚本：
+  - `node scripts/check-env.js`
+  - `node scripts/dev-init.js`
+  - `node scripts/dev-reset.js`
+- Docker Desktop 需先启动。
+- 推荐在 PowerShell 中执行上述命令。
+
+## 手动启动步骤（备用）
+1. `docker compose up -d`
+2. `cp .env.example .env`
+3. `pnpm install`
+4. `pnpm --filter @kingdee/api prisma:generate`
+5. `pnpm --filter @kingdee/api prisma:migrate --name init`
+6. `pnpm --filter @kingdee/api seed`
+7. `pnpm --filter @kingdee/api dev`
+8. `pnpm --filter @kingdee/admin-web dev`
+9. `pnpm --filter @kingdee/browser-extension build`
 
 ## 核心 API
 - `GET /api/field-meta`
@@ -60,3 +87,8 @@ pnpm --filter @kingdee/browser-extension build
 - `docs/plugin-architecture.md`
 - `docs/data-normalization.md`
 - `docs/field-alias-strategy.md`
+- `docs/verification-report.md`
+- `docs/demo-walkthrough.md`
+- `docs/release-readiness.md`
+
+- `docs/local-uat-checklist.md`
