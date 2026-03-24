@@ -1,0 +1,44 @@
+import { Controller, Get, Param, Post } from '@nestjs/common';
+import { createHash } from 'crypto';
+import { PrismaService } from '../common/prisma.service';
+import { AuditService } from '../common/audit.service';
+
+@Controller('releases')
+export class ReleaseController {
+  constructor(private readonly prisma: PrismaService, private readonly audit: AuditService) {}
+
+  @Post('publish')
+  async publish() {
+    const [fieldDictionary, formulaProfiles, replacementRules, productSnapshot] = await Promise.all([
+      this.prisma.fieldMeta.findMany({ orderBy: { sortOrder: 'asc' } }),
+      this.prisma.formulaProfile.findMany({ where: { enabled: true } }),
+      this.prisma.replacementRule.findMany({ where: { enabled: true } }),
+      this.prisma.productMaster.findMany(),
+    ]);
+    const version = `v${Date.now()}`;
+    const payload = { version, releasedAt: new Date().toISOString(), fieldDictionary, formulaProfiles, replacementRules, productSnapshot };
+    const checksum = createHash('sha256').update(JSON.stringify(payload)).digest('hex');
+    const created = await this.prisma.ruleRelease.create({ data: { version, payloadJson: payload as any, checksum, createdBy: 'admin' } });
+    await this.audit.log('admin', 'publish', 'RuleRelease', created.id, null, created);
+    return created;
+  }
+
+  @Get('latest')
+  latest() {
+    return this.prisma.ruleRelease.findFirst({ orderBy: { releasedAt: 'desc' } });
+  }
+
+  @Get('history')
+  history() {
+    return this.prisma.ruleRelease.findMany({ orderBy: { releasedAt: 'desc' } });
+  }
+
+  @Post(':version/rollback')
+  async rollback(@Param('version') version: string) {
+    const release = await this.prisma.ruleRelease.findUnique({ where: { version } });
+    if (!release) return { ok: false };
+    const created = await this.prisma.ruleRelease.create({ data: { version: `rollback-${Date.now()}`, payloadJson: release.payloadJson, checksum: release.checksum, status: 'rollback', createdBy: 'admin' } });
+    await this.audit.log('admin', 'rollback', 'RuleRelease', created.id, null, created);
+    return created;
+  }
+}
