@@ -3,3 +3,7 @@ export * from './types/enums';
 export * from './metadata/fieldDictionary';
 export * from './conversion';
 export * from './formula';
+export * from './plugin-types';
+export * from './field-dictionary';
+export * from './formula-engine';
+export * from './unit-conversion';

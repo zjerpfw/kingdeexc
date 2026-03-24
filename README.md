@@ -3,6 +3,7 @@
 ## 项目结构
 - `apps/api`: NestJS + Prisma + PostgreSQL
 - `apps/admin-web`: React + Vite + Ant Design
+- `apps/browser-extension`: Chrome/Edge MV3 插件（content script + 决策引擎）
 - `packages/shared`: 共享类型、字段字典、公式与换算能力
 
 ## 快速启动
@@ -28,6 +29,11 @@ pnpm --filter @kingdee/api seed
 ```bash
 pnpm dev
 ```
+6. 构建浏览器插件
+```bash
+pnpm --filter @kingdee/browser-extension build
+```
+> 构建产物在 `apps/browser-extension/dist`，在 Chrome/Edge 开发者模式中加载该目录。
 
 ## 核心 API
 - `GET /api/field-meta`
@@ -51,3 +57,6 @@ pnpm dev
 - `docs/architecture.md`
 - `docs/field-dictionary.md`
 - `docs/formula-engine.md`
+- `docs/plugin-architecture.md`
+- `docs/data-normalization.md`
+- `docs/field-alias-strategy.md`
