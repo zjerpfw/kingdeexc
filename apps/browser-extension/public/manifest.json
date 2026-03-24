@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "金蝶库存替代决策插件",
+  "version": "0.1.0",
+  "description": "拦截金蝶精斗云接口并给出替代建议",
+  "permissions": ["storage"],
+  "host_permissions": ["https://tf.jdy.com/*", "http://localhost:3000/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://tf.jdy.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ]
+}
