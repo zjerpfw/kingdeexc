@@ -16,6 +16,7 @@
 ```bash
 pnpm run check:env
 ```
+> 若检查失败，请先按脚本输出修复（代理 / Docker / .env）再继续。
 
 ### 2) 一键初始化
 ```bash
