@@ -16,6 +16,7 @@
 ```bash
 pnpm run check:env
 ```
+> 若检查失败，请先按脚本输出修复（代理 / Docker / .env）再继续。
 
 ### 2) 一键初始化
 ```bash
@@ -92,3 +93,5 @@ pnpm run dev:reset
 - `docs/release-readiness.md`
 
 - `docs/local-uat-checklist.md`
+
+- `docs/runtime-verification-report.md`
