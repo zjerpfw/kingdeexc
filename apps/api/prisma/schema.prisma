@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum FieldSource {
+  inventory_report
+  sales_order_detail
+}
+
+enum ValueType {
+  number
+  string
+  object
+  date
+  basedata
+}
+
+enum UnitScope {
+  order_unit
+  base_unit
+  aux_unit
+  none
+}
+
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  displayName String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductMaster {
+  id               String   @id @default(cuid())
+  productCode      String
+  productName      String
+  warehouseCode    String?
+  warehouseName    String?
+  baseUnit         String?
+  auxUnit          String?
+  floatBaseUnit    String?
+  conversionRate   String?
+  latestInventory  Float?
+  conversionFactor Float?
+  conversionParsed Boolean  @default(false)
+  manualReviewRequired Boolean @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([productCode])
+}
+
+model FieldMeta {
+  id            String      @id @default(cuid())
+  source        FieldSource
+  fieldKey      String
+  labelZh       String
+  labelEn       String?
+  descriptionZh String?
+  valueType     ValueType
+  unitScope     UnitScope
+  visibleDefault Boolean    @default(true)
+  aliasEditable Boolean     @default(false)
+  sortOrder     Int         @default(0)
+  sampleValue   String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([source, fieldKey])
+}
+
+model UnitConversion {
+  id            String   @id @default(cuid())
+  productCode   String
+  fromUnit      String
+  toUnit        String
+  factor        Float?
+  formulaText   String?
+  parsedSuccess Boolean @default(false)
+  manualReviewRequired Boolean @default(false)
+}
+
+model ScopeProfile {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  scopeJson   Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model FormulaProfile {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  configJson  Json
+  enabled     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ReplacementRule {
+  ruleId             String   @id @default(cuid())
+  sourceProductCode  String
+  sourceProductName  String
+  targetProductCode  String
+  targetProductName  String
+  priority           Int      @default(100)
+  enabled            Boolean  @default(true)
+  scopeProfileId     String?
+  formulaProfileId   String?
+  note               String?
+  createdBy          String
+  updatedBy          String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model RuleRelease {
+  id          String   @id @default(cuid())
+  version     String   @unique
+  releasedAt  DateTime @default(now())
+  status      String   @default("published")
+  payloadJson Json
+  checksum    String
+  createdBy   String
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  actor       String
+  action      String
+  entityType  String
+  entityId    String
+  beforeJson  Json?
+  afterJson   Json?
+  createdAt   DateTime @default(now())
+}

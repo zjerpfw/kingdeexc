@@ -1,0 +1,14 @@
+# 库存查询表返回数据（样例）
+| key | header | tips | sample |
+| materialid_number | 商品编码 | 物料编码 | A1001 |
+| materialid_name | 商品名称 | 物料名称 | 一次性手套 |
+| stockid_number | 仓库编码 | 仓库编号 | CK001 |
+| stockid_name | 仓库名称 | 仓库名称 | 主仓 |
+| baseunit_id | 基本单位 | 主计量单位 | 副 |
+| auxunitid_id | 辅助单位 | 辅助计量单位 | 箱 |
+| deffloatunit_id | 浮动基本单位 | 浮动单位 | 包 |
+| conversionrate | 换算公式 | 例如 1 箱 = 180 副 或 1 箱 ≈ 480 副 | 1 箱 = 180 副 |
+| qty | 即时库存（基本，不含预留量） | 当前时点基本库存，不含预留量 | 360 |
+| validqty | 可用库存（基本） | 可用于销售/出库的基本库存 | 300 |
+| auxqty | 辅助数量 | 按辅助单位展示的库存数量 | 2 |
+| validauxqty | 可用辅助数量 | 按辅助单位展示的可用库存 | 1.66 |
