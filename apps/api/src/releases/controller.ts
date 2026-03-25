@@ -1,4 +1,5 @@
 import { Controller, Get, Param, Post } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { createHash } from 'crypto';
 import { PrismaService } from '../common/prisma.service';
 import { AuditService } from '../common/audit.service';
@@ -20,7 +21,7 @@ export class ReleaseController {
     const payloadBase = { version, releasedAt, fieldDictionary, formulaProfiles, replacementRules, productSnapshot };
     const checksum = createHash('sha256').update(JSON.stringify(payloadBase)).digest('hex');
     const payload = { ...payloadBase, checksum };
-    const created = await this.prisma.ruleRelease.create({ data: { version, releasedAt: new Date(releasedAt), payloadJson: payload as any, checksum, createdBy: 'admin' } });
+    const created = await this.prisma.ruleRelease.create({ data: { version, releasedAt: new Date(releasedAt), payloadJson: payload as Prisma.InputJsonValue, checksum, createdBy: 'admin' } });
     await this.audit.log('admin', 'publish', 'RuleRelease', created.id, null, created);
     return created;
   }
@@ -40,7 +41,15 @@ export class ReleaseController {
     const release = await this.prisma.ruleRelease.findUnique({ where: { version } });
     if (!release) return { ok: false };
     const newVersion = `rollback-${Date.now()}`;
-    const created = await this.prisma.ruleRelease.create({ data: { version: newVersion, payloadJson: release.payloadJson, checksum: release.checksum, status: 'rollback', createdBy: 'admin' } });
+    const created = await this.prisma.ruleRelease.create({
+      data: {
+        version: newVersion,
+        payloadJson: release.payloadJson as Prisma.InputJsonValue,
+        checksum: release.checksum,
+        status: 'rollback',
+        createdBy: 'admin',
+      },
+    });
     await this.audit.log('admin', 'rollback', 'RuleRelease', created.id, null, created);
     return created;
   }

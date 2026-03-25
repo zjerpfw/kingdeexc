@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { FIELD_DICTIONARY_SEED, BUILTIN_FORMULA_TEMPLATES, parseConversionFactor } from '@kingdee/shared';
 import { createHash } from 'crypto';
 
@@ -42,8 +42,8 @@ async function main() {
   for (const t of BUILTIN_FORMULA_TEMPLATES) {
     await prisma.formulaProfile.upsert({
       where: { id: t.name },
-      update: { name: t.name, description: t.name, configJson: t.config as any },
-      create: { id: t.name, name: t.name, description: t.name, configJson: t.config as any },
+      update: { name: t.name, description: t.name, configJson: t.config as Prisma.InputJsonValue },
+      create: { id: t.name, name: t.name, description: t.name, configJson: t.config as Prisma.InputJsonValue },
     });
   }
 
@@ -73,8 +73,8 @@ async function main() {
 
   await prisma.ruleRelease.upsert({
     where: { version },
-    update: { payloadJson: payload as any, checksum },
-    create: { version, releasedAt: new Date(releasedAt), payloadJson: payload as any, checksum, createdBy: 'admin' },
+    update: { payloadJson: payload as Prisma.InputJsonValue, checksum },
+    create: { version, releasedAt: new Date(releasedAt), payloadJson: payload as Prisma.InputJsonValue, checksum, createdBy: 'admin' },
   });
 
   await prisma.auditLog.create({
@@ -83,8 +83,8 @@ async function main() {
       action: 'seed',
       entityType: 'System',
       entityId: 'seed-v1',
-      beforeJson: null,
-      afterJson: { productCount: sampleProducts.length, ruleCount: rules.length, formulaCount: formulaProfiles.length } as any,
+      beforeJson: Prisma.JsonNull,
+      afterJson: { productCount: sampleProducts.length, ruleCount: rules.length, formulaCount: formulaProfiles.length } as Prisma.InputJsonValue,
     },
   });
 
