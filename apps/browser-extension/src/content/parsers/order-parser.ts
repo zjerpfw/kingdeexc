@@ -2,8 +2,24 @@ import type { NormalizedOrderRow } from '@kingdee/shared';
 
 const toNum = (v: unknown) => (v === null || v === undefined || v === '' ? undefined : Number(v));
 
+function pickRowList(payload: any): any[] {
+  const candidates = [
+    payload?.data?.rows,
+    payload?.rows,
+    payload?.data?.data?.rows,
+    payload?.data?.data?.list,
+    payload?.data?.list,
+    payload?.result?.rows,
+    payload?.result?.list,
+    payload?.data,
+  ];
+
+  const found = candidates.find((item) => Array.isArray(item));
+  return Array.isArray(found) ? found : [];
+}
+
 export function parseOrderRows(payload: any): { rows: NormalizedOrderRow[]; warnings: string[] } {
-  const list = payload?.data?.rows || payload?.rows || payload?.data || [];
+  const list = pickRowList(payload);
   const warnings: string[] = [];
   const rows: NormalizedOrderRow[] = (Array.isArray(list) ? list : []).map((r: any) => ({
     productCode: r.materialid || '',

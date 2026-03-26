@@ -4,10 +4,10 @@
   "version": "0.1.0",
   "description": "拦截金蝶精斗云接口并给出替代建议",
   "permissions": ["storage"],
-  "host_permissions": ["https://tf.jdy.com/*", "http://localhost:3000/*"],
+  "host_permissions": ["https://*.jdy.com/*", "http://localhost:3000/*", "http://127.0.0.1:3000/*"],
   "content_scripts": [
     {
-      "matches": ["https://tf.jdy.com/*"],
+      "matches": ["https://*.jdy.com/*"],
       "js": ["content.js"],
       "run_at": "document_start"
     }

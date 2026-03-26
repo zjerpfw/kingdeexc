@@ -8,11 +8,22 @@ const { Header, Sider, Content } = Layout;
 
 function useFetch<T>(url: string) {
   const [data, setData] = useState<T[]>([]);
-  const load = () => api.get(url).then((r) => setData(r.data));
+  const [error, setError] = useState<string>('');
+  const load = () =>
+    api
+      .get(url)
+      .then((r) => {
+        setData(r.data);
+        setError('');
+      })
+      .catch((e) => {
+        setError(e?.message || '请求失败');
+        setData([]);
+      });
   useEffect(() => {
     void load();
   }, [url]);
-  return { data, load };
+  return { data, load, error };
 }
 
 const LoginPage = ({ onOk }: { onOk: () => void }) => (
@@ -35,20 +46,23 @@ function Dashboard() {
 }
 
 function Products() {
-  const { data } = useFetch<any>('/products');
+  const { data, error } = useFetch<any>('/products');
   return (
-    <Table
-      rowKey="id"
-      dataSource={data}
-      columns={[
-        { title: '商品', render: (_, r) => `${r.productName}/${r.productCode}` },
-        { title: '仓库', dataIndex: 'warehouseName' },
-        { title: '单位', render: (_, r) => `${r.baseUnit || '-'} / ${r.auxUnit || '-'}` },
-        { title: '换算', dataIndex: 'conversionRate' },
-        { title: '解析状态', render: (_, r) => (r.manualReviewRequired ? <Tag color="red">manualReviewRequired</Tag> : <Tag color="green">解析成功</Tag>) },
-        { title: '库存(基本)', dataIndex: 'latestInventory' },
-      ]}
-    />
+    <>
+      {error ? <Alert type="error" showIcon message={`商品数据加载失败：${error}`} description="请确认 API 服务已启动，且前端环境变量 VITE_API_BASE_URL 指向正确地址。" /> : null}
+      <Table
+        rowKey="id"
+        dataSource={data}
+        columns={[
+          { title: '商品', render: (_, r) => `${r.productName}/${r.productCode}` },
+          { title: '仓库', dataIndex: 'warehouseName' },
+          { title: '单位', render: (_, r) => `${r.baseUnit || '-'} / ${r.auxUnit || '-'}` },
+          { title: '换算', dataIndex: 'conversionRate' },
+          { title: '解析状态', render: (_, r) => (r.manualReviewRequired ? <Tag color="red">manualReviewRequired</Tag> : <Tag color="green">解析成功</Tag>) },
+          { title: '库存(基本)', dataIndex: 'latestInventory' },
+        ]}
+      />
+    </>
   );
 }
 
