@@ -4,9 +4,9 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "build": "tsup src/index.ts --format cjs esm --dts",
     "test": "vitest run",
-    "dev": "tsup src/index.ts --watch --dts",
+    "dev": "tsup src/index.ts --format cjs esm --watch --dts",
     "lint": "echo 'no lint'"
   },
   "dependencies": {
@@ -22,7 +22,7 @@
     ".": {
       "import": "./dist/index.mjs",
       "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "default": "./dist/index.mjs"
     }
   }
 }
