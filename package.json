@@ -1,0 +1,14 @@
+{
+  "name": "kingdee-replacement-center",
+  "private": true,
+  "packageManager": "pnpm@9.12.3",
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm -r --parallel dev",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint",
+    "check:env": "node scripts/check-env.js",
+    "dev:init": "node scripts/dev-init.js",
+    "dev:reset": "node scripts/dev-reset.js"
+  }
+}
